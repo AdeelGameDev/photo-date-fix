@@ -4,32 +4,57 @@
     x:Class="PhotoDateFixer.MainPage"
     Shell.NavBarIsVisible="False">
 
-    <VerticalStackLayout
+    <Grid
         Padding="30"
-        Spacing="20">
+        RowDefinitions="Auto,Auto,Auto,*,Auto">
 
         <Label
+            Grid.Row="0"
             Text="Photo Date Fixer"
             FontSize="30"
             HorizontalOptions="Center"/>
 
-        <Label
-            Text="Fix photo dates from filenames"
-            HorizontalOptions="Center"/>
-
         <Button
+            Grid.Row="1"
             Text="Select Photos"
             Clicked="OnSelectPhotosClicked"/>
 
         <Label
+            Grid.Row="2"
             x:Name="StatusLabel"
             Text="No photos selected"
             HorizontalOptions="Center"/>
 
+        <CollectionView
+            Grid.Row="3"
+            x:Name="PhotoList">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <VerticalStackLayout Padding="10">
+
+                        <Label
+                            Text="{Binding FileName}"
+                            FontSize="14"/>
+
+                        <Label
+                            Text="{Binding DisplayDate}"
+                            FontSize="12"/>
+
+                    </VerticalStackLayout>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+
         <Button
+            Grid.Row="4"
             Text="Fix Dates"
             Clicked="OnFixDatesClicked"/>
 
-    </VerticalStackLayout>
+    </Grid>
 
 </ContentPage>
