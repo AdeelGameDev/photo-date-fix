@@ -61,21 +61,21 @@
 
                             <!-- Thumbnail -->
 
-                            <Frame
-                                Grid.Column="0"
-                                Padding="0"
-                                CornerRadius="8"
-                                IsClippedToBounds="True"
-                                HasShadow="False"
-                                BorderColor="#DDDDDD">
+                            <!-- Thumbnail -->
+                            <Grid
+    Grid.Column="0"
+    WidthRequest="64"
+    HeightRequest="64">
 
                                 <Image
-                                    Source="{Binding Thumbnail}"
-                                    HeightRequest="58"
-                                    WidthRequest="58"
-                                    Aspect="AspectFill"/>
+        Source="{Binding Thumbnail}"
+        Aspect="AspectFill"
+        WidthRequest="64"
+        HeightRequest="64"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill"/>
 
-                            </Frame>
+                            </Grid>
 
                             <!-- Info -->
 
