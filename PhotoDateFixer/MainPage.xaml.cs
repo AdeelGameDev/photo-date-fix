@@ -11,7 +11,6 @@ public partial class MainPage : ContentPage
     private readonly IDateFixService dateFixService;
     private readonly ObservableCollection<PhotoInfo> photoInfos = new();
 
-
     public MainPage(IDateFixService dateFixService)
     {
         InitializeComponent();
@@ -24,9 +23,11 @@ public partial class MainPage : ContentPage
 
         SharedPhotoService.PhotosReceived += LoadSharedPhotos;
 
+        ManualDatePicker.Date = DateTime.Today;
+        ManualTimePicker.Time = DateTime.Now.TimeOfDay;
+
         LoadSharedPhotos();
     }
-
 
 
     private void LoadSharedPhotos()
@@ -77,67 +78,41 @@ public partial class MainPage : ContentPage
 
 
 
-
     private async void OnSetDateClicked(
-        object sender,
-        EventArgs e)
+      object sender,
+      EventArgs e)
     {
         var selectedPhotos = photoInfos
             .Where(x => x.IsSelected)
             .ToList();
 
-
         if (selectedPhotos.Count == 0)
         {
             await DisplayAlert(
                 "No Photos",
-                "Please select photos first",
+                "Please select at least one photo.",
                 "OK");
 
             return;
         }
 
+        DateTime selectedDate =
+            ManualDatePicker.Date.Date +
+            new TimeSpan(
+                ManualTimePicker.Time.Hours,
+                ManualTimePicker.Time.Minutes,
+                0);
 
-
-        string date =
-            await DisplayPromptAsync(
-                "Set Date",
-                "Enter date (yyyy-MM-dd HH:mm)",
-                "OK",
-                "Cancel",
-                placeholder: "2020-01-01 12:00");
-
-
-
-        if (string.IsNullOrWhiteSpace(date))
-            return;
-
-
-
-        if (DateTime.TryParse(date, out DateTime selectedDate))
+        foreach (var photo in selectedPhotos)
         {
-            foreach (var photo in selectedPhotos)
-            {
-                photo.DetectedDate = selectedDate;
-                photo.Confidence = 100;
-                photo.Source = "Manual";
-            }
-
-
-            StatusLabel.Text =
-                $"Updated {selectedPhotos.Count} photos";
+            photo.DetectedDate = selectedDate;
+            photo.Confidence = 100;
+            photo.Source = "Manual";
         }
-        else
-        {
-            await DisplayAlert(
-                "Invalid Date",
-                "Use format yyyy-MM-dd HH:mm",
-                "OK");
-        }
+
+        StatusLabel.Text =
+            $"Manual date applied to {selectedPhotos.Count} photo(s)";
     }
-
-
-
 
 
     private async void OnSelectPhotosClicked(
@@ -192,13 +167,18 @@ public partial class MainPage : ContentPage
 
 
         StatusLabel.Text =
-            $"{photoInfos.Count} photos processed";
+       $"{photoInfos.Count} photo(s) loaded";
     }
 
 
-
-
-
+    private void OnPhotoTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is BindableObject view &&
+            view.BindingContext is PhotoInfo photo)
+        {
+            photo.IsSelected = !photo.IsSelected;
+        }
+    }
     private async void OnFixDatesClicked(
         object sender,
         EventArgs e)

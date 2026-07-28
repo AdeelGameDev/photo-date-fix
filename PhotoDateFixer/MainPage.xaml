@@ -1,90 +1,196 @@
-﻿<ContentPage 
+﻿<ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="PhotoDateFixer.MainPage"
     Shell.NavBarIsVisible="False">
 
     <Grid
-        Padding="30"
+        Padding="12"
         RowDefinitions="Auto,Auto,Auto,*,Auto">
 
+        <!-- Header -->
         <Label
             Grid.Row="0"
             Text="Photo Date Fixer"
-            FontSize="30"
-            HorizontalOptions="Center"/>
+            FontSize="26"
+            FontAttributes="Bold"
+            HorizontalOptions="Center"
+            Margin="0,4,0,12"/>
 
+        <!-- Select -->
         <Button
             Grid.Row="1"
+            HeightRequest="44"
+            CornerRadius="10"
             Text="Select Photos"
             Clicked="OnSelectPhotosClicked"/>
 
+        <!-- Status -->
         <Label
             Grid.Row="2"
             x:Name="StatusLabel"
-            Text="No photos selected"
-            HorizontalOptions="Center"/>
+            FontSize="13"
+            HorizontalOptions="Center"
+            Margin="0,8"/>
 
+        <!-- Photos -->
         <CollectionView
             Grid.Row="3"
-            x:Name="PhotoList">
+            x:Name="PhotoList"
+            SelectionMode="None">
 
             <CollectionView.ItemTemplate>
+
                 <DataTemplate>
 
-                    <Grid Padding="10"
-          ColumnDefinitions="80,*">
+                    <Frame
+                        Margin="0,4"
+                        Padding="8"
+                        CornerRadius="12"
+                        BorderColor="#DDDDDD"
+                        HasShadow="False">
 
-                        <Image
-            Grid.Column="0"
-            Source="{Binding Thumbnail}"
-            HeightRequest="70"
-            WidthRequest="70"
-            Aspect="AspectFill"/>
+                        <Grid
+                            ColumnDefinitions="60,*"
+                            ColumnSpacing="10">
 
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Tapped="OnPhotoTapped"/>
+                            </Grid.GestureRecognizers>
 
-                        <VerticalStackLayout
-            Grid.Column="1">
+                            <!-- Thumbnail -->
 
-                            <HorizontalStackLayout>
+                            <Frame
+                                Grid.Column="0"
+                                Padding="0"
+                                CornerRadius="8"
+                                IsClippedToBounds="True"
+                                HasShadow="False"
+                                BorderColor="#DDDDDD">
 
-                                <CheckBox
-                    IsChecked="{Binding IsSelected}" />
+                                <Image
+                                    Source="{Binding Thumbnail}"
+                                    HeightRequest="58"
+                                    WidthRequest="58"
+                                    Aspect="AspectFill"/>
+
+                            </Frame>
+
+                            <!-- Info -->
+
+                            <VerticalStackLayout
+                                Grid.Column="1"
+                                Spacing="3">
+
+                                <!-- First Row -->
+
+                                <Grid
+                                    ColumnDefinitions="Auto,*">
+
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        IsChecked="{Binding IsSelected}"
+                                        InputTransparent="True"/>
+
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="{Binding FileName}"
+                                        FontSize="13"
+                                        FontAttributes="Bold"
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="1"
+                                        VerticalTextAlignment="Center"/>
+
+                                </Grid>
+
+                                <!-- Date -->
 
                                 <Label
-                    Text="{Binding FileName}"
-                    FontSize="14"
-                    VerticalOptions="Center"/>
+                                    Text="{Binding DetectedDate,StringFormat='{0:dd MMM yyyy HH:mm}'}"
+                                    FontSize="11"
+                                    TextColor="#555555"/>
 
-                            </HorizontalStackLayout>
+                                <!-- Source + Confidence -->
 
+                                <HorizontalStackLayout
+                                    Spacing="10">
 
-                            <Label
-                Text="{Binding DisplayDate}"
-                FontSize="12"/>
+                                    <Frame
+                                        Padding="6,2"
+                                        CornerRadius="6"
+                                        BackgroundColor="#E8F5E9"
+                                        HasShadow="False">
 
-                        </VerticalStackLayout>
+                                        <Label
+                                            Text="{Binding Source}"
+                                            FontSize="10"
+                                            FontAttributes="Bold"
+                                            TextColor="#2E7D32"/>
 
-                    </Grid>
+                                    </Frame>
+
+                                    <Label
+                                        Text="{Binding Confidence,StringFormat='Confidence {0}%'}"
+                                        FontSize="10"
+                                        VerticalOptions="Center"
+                                        TextColor="Gray"/>
+
+                                </HorizontalStackLayout>
+
+                            </VerticalStackLayout>
+
+                        </Grid>
+
+                    </Frame>
 
                 </DataTemplate>
+
             </CollectionView.ItemTemplate>
 
         </CollectionView>
 
-        <VerticalStackLayout 
-    Grid.Row="4"
-    Spacing="15">
+        <!-- Bottom Controls -->
 
-            <Button
-        Text="Set Date For Selected"
-        Clicked="OnSetDateClicked"/>
+        <Frame
+            Grid.Row="4"
+            Margin="0,10,0,0"
+            Padding="10"
+            CornerRadius="12"
+            BorderColor="#DDDDDD"
+            HasShadow="False">
 
-            <Button
-        Text="Fix Dates"
-        Clicked="OnFixDatesClicked"/>
+            <VerticalStackLayout
+                Spacing="8">
 
-        </VerticalStackLayout>
+                <Label
+                    Text="Manual Date &amp; Time"
+                    FontSize="15"
+                    FontAttributes="Bold"/>
+
+                <DatePicker
+                    x:Name="ManualDatePicker"/>
+
+                <TimePicker
+                    x:Name="ManualTimePicker"
+                    Format="HH:mm"/>
+
+                <Button
+                    HeightRequest="44"
+                    CornerRadius="10"
+                    Text="Apply To Selected"
+                    Clicked="OnSetDateClicked"/>
+
+                <Button
+                    HeightRequest="44"
+                    CornerRadius="10"
+                    Text="Fix Dates"
+                    Clicked="OnFixDatesClicked"/>
+
+            </VerticalStackLayout>
+
+        </Frame>
+
     </Grid>
 
 </ContentPage>
