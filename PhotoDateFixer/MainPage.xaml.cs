@@ -21,6 +21,16 @@ public partial class MainPage : ContentPage
         SharedPhotoService.PhotosReceived += LoadSharedPhotos;
 
         LoadSharedPhotos();
+        var exif = new ExifDateDetectionService();
+
+        var result = exif.DetectDate(
+            @"D:\Phone Backups\Phone Backup 1\All\DCIM\Camera\IMG_20260225_154951.jpg"
+        );
+
+        // Put a breakpoint here
+        System.Diagnostics.Debug.WriteLine(
+    $"EXIF TEST: {result.Date} | {result.Source} | {result.Confidence}"
+);
     }
 
     private void LoadSharedPhotos()
