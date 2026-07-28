@@ -32,29 +32,59 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
 
-                    <VerticalStackLayout Padding="10">
+                    <Grid Padding="10"
+          ColumnDefinitions="80,*">
 
-                        <Label
-                            Text="{Binding FileName}"
-                            FontSize="14"/>
+                        <Image
+            Grid.Column="0"
+            Source="{Binding Thumbnail}"
+            HeightRequest="70"
+            WidthRequest="70"
+            Aspect="AspectFill"/>
 
-                        <Label
-                            Text="{Binding DisplayDate}"
-                            FontSize="12"/>
 
-                    </VerticalStackLayout>
+                        <VerticalStackLayout
+            Grid.Column="1">
+
+                            <HorizontalStackLayout>
+
+                                <CheckBox
+                    IsChecked="{Binding IsSelected}" />
+
+                                <Label
+                    Text="{Binding FileName}"
+                    FontSize="14"
+                    VerticalOptions="Center"/>
+
+                            </HorizontalStackLayout>
+
+
+                            <Label
+                Text="{Binding DisplayDate}"
+                FontSize="12"/>
+
+                        </VerticalStackLayout>
+
+                    </Grid>
 
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
         </CollectionView>
 
+        <VerticalStackLayout 
+    Grid.Row="4"
+    Spacing="15">
 
-        <Button
-            Grid.Row="4"
-            Text="Fix Dates"
-            Clicked="OnFixDatesClicked"/>
+            <Button
+        Text="Set Date For Selected"
+        Clicked="OnSetDateClicked"/>
 
+            <Button
+        Text="Fix Dates"
+        Clicked="OnFixDatesClicked"/>
+
+        </VerticalStackLayout>
     </Grid>
 
 </ContentPage>
