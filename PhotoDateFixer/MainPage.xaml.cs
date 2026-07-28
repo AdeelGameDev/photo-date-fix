@@ -21,16 +21,6 @@ public partial class MainPage : ContentPage
         SharedPhotoService.PhotosReceived += LoadSharedPhotos;
 
         LoadSharedPhotos();
-        var exif = new ExifDateDetectionService();
-
-        var result = exif.DetectDate(
-            @"D:\Phone Backups\Phone Backup 1\All\DCIM\Camera\IMG_20260225_154951.jpg"
-        );
-
-        // Put a breakpoint here
-        System.Diagnostics.Debug.WriteLine(
-    $"EXIF TEST: {result.Date} | {result.Source} | {result.Confidence}"
-);
     }
 
     private void LoadSharedPhotos()
@@ -40,9 +30,11 @@ public partial class MainPage : ContentPage
 
         photoInfos.Clear();
 
-        foreach (var fileName in SharedPhotoService.SharedFileNames)
+        foreach (var filePath in SharedPhotoService.SharedFileNames)
         {
-            var result = parser.DetectDate(fileName);
+            var fileName = Path.GetFileName(filePath);
+
+            var result = parser.DetectDate(filePath, fileName);
 
             System.Diagnostics.Debug.WriteLine(
                 $"FILE: {fileName} | DATE: {result.Date} | CONFIDENCE: {result.Confidence} | SOURCE: {result.Source}"
@@ -62,7 +54,6 @@ public partial class MainPage : ContentPage
         SharedPhotoService.SharedFileNames.Clear();
     }
 
-
     private async void OnSelectPhotosClicked(object sender, EventArgs e)
     {
         var photos = await photoPickerService.PickPhotos();
@@ -74,10 +65,12 @@ public partial class MainPage : ContentPage
 
         foreach (var photo in photos)
         {
-            var result = parser.DetectDate(photo.FileName);
+            var result = parser.DetectDate(photo.FullPath, photo.FileName);
+
             System.Diagnostics.Debug.WriteLine(
-    $"FILE: {photo.FileName} | DATE: {result.Date} | CONFIDENCE: {result.Confidence} | SOURCE: {result.Source}"
-);
+                $"FILE: {photo.FileName} | DATE: {result.Date} | CONFIDENCE: {result.Confidence} | SOURCE: {result.Source}"
+            );
+
             photoInfos.Add(new PhotoInfo
             {
                 FileName = photo.FileName,
@@ -89,7 +82,6 @@ public partial class MainPage : ContentPage
 
         StatusLabel.Text = $"{photoInfos.Count} photos processed";
     }
-
 
     private void OnFixDatesClicked(object sender, EventArgs e)
     {

@@ -6,6 +6,8 @@ namespace PhotoDateFixer.Services;
 
 public class DateDetectionService
 {
+    private readonly ExifDateDetectionService exifDetector = new();
+
     private readonly string[] formats =
     {
         // Full date + time (highest confidence)
@@ -23,13 +25,22 @@ public class DateDetectionService
         "dd-MM-yyyy HH.mm",
         "MM-dd-yyyy HH.mm",
 
-        // Date only (lowest)
+        // Date only
         "yyyyMMdd"
     };
 
-
-    public DateDetectionResult DetectDate(string fileName)
+    public DateDetectionResult DetectDate(string filePath, string fileName)
     {
+        // 1. Try EXIF first
+        if (!string.IsNullOrWhiteSpace(filePath))
+        {
+            var exifResult = exifDetector.DetectDate(filePath);
+
+            if (exifResult.Date.HasValue)
+                return exifResult;
+        }
+
+        // 2. Fall back to filename
         string name = Path.GetFileNameWithoutExtension(fileName);
 
         foreach (var part in ExtractParts(name))
@@ -56,7 +67,7 @@ public class DateDetectionService
             }
         }
 
-
+        // 3. Nothing found
         return new DateDetectionResult
         {
             Date = null,
@@ -64,8 +75,6 @@ public class DateDetectionService
             Source = "No match"
         };
     }
-
-
 
     private int GetConfidence(string format)
     {
@@ -76,11 +85,10 @@ public class DateDetectionService
             "yyyy-MM-dd-HH-mm-ss" => 100,
             "yyyyMMdd_HHmmssfff" => 100,
 
-            "yyyyMMdd-HHmmss" => 90,
-
             "dd-MM-yyyy HH.mm" => 95,
             "MM-dd-yyyy HH.mm" => 95,
 
+            "yyyyMMdd-HHmmss" => 90,
             "yyMMddHHmmssfff" => 90,
 
             "yyyyMMdd" => 80,
@@ -89,44 +97,32 @@ public class DateDetectionService
         };
     }
 
-
-
     private List<string> ExtractParts(string text)
     {
         HashSet<string> parts = new();
 
-
         parts.Add(text);
-
 
         AddMatches(parts, text,
             @"\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}");
 
-
         AddMatches(parts, text,
             @"\d{8}-\d{6}");
-
 
         AddMatches(parts, text,
             @"\d{17}");
 
-
         AddMatches(parts, text,
             @"\d{14}");
-
 
         AddMatches(parts, text,
             @"\d{2}-\d{2}-\d{4}\s\d{2}\.\d{2}");
 
-
         AddMatches(parts, text,
             @"\d{8}");
 
-
         return parts.ToList();
     }
-
-
 
     private void AddMatches(
         HashSet<string> parts,
@@ -139,17 +135,13 @@ public class DateDetectionService
         }
     }
 
-
-
     private bool IsValidDate(DateTime date)
     {
         if (date.Year < 2000)
             return false;
 
-
         if (date.Year > DateTime.Now.Year + 1)
             return false;
-
 
         return true;
     }
