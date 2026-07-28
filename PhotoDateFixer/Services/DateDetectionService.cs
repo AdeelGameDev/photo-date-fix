@@ -37,7 +37,17 @@ public class DateDetectionService
             var exifResult = exifDetector.DetectDate(filePath);
 
             if (exifResult.Date.HasValue)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"EXIF SUCCESS: {fileName} -> {exifResult.Date}"
+                );
+
                 return exifResult;
+            }
+
+            System.Diagnostics.Debug.WriteLine(
+                $"EXIF FAILED: {fileName}"
+            );
         }
 
         // 2. Fall back to filename

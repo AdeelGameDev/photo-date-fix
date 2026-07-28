@@ -34,6 +34,8 @@ public partial class MainPage : ContentPage
         {
             var fileName = Path.GetFileName(filePath);
 
+            System.Diagnostics.Debug.WriteLine($"PATH: {filePath}");
+
             var result = parser.DetectDate(filePath, fileName);
 
             System.Diagnostics.Debug.WriteLine(
@@ -65,6 +67,8 @@ public partial class MainPage : ContentPage
 
         foreach (var photo in photos)
         {
+            System.Diagnostics.Debug.WriteLine($"FullPath: {photo.FullPath}");
+            System.Diagnostics.Debug.WriteLine($"FileName: {photo.FileName}");
             var result = parser.DetectDate(photo.FullPath, photo.FileName);
 
             System.Diagnostics.Debug.WriteLine(

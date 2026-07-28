@@ -68,7 +68,37 @@ namespace PhotoDateFixer
             return fileName;
         }
 
+        private string? CopyUriToCache(Android.Net.Uri uri)
+        {
+            try
+            {
+                var fileName = GetFileName(uri);
 
+                if (string.IsNullOrWhiteSpace(fileName))
+                    fileName = Guid.NewGuid().ToString();
+
+                string cachePath = Path.Combine(CacheDir.AbsolutePath, fileName);
+
+                using var input = ContentResolver.OpenInputStream(uri);
+
+                if (input == null)
+                    return null;
+
+                using var output = File.Create(cachePath);
+
+                input.CopyTo(output);
+
+                System.Diagnostics.Debug.WriteLine($"Copied: {cachePath}");
+
+                return cachePath;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+
+                return null;
+            }
+        }
         private void HandleShareIntent(Intent intent)
         {
             List<string> photos = new();
@@ -80,16 +110,12 @@ namespace PhotoDateFixer
 
                 if (uri != null)
                 {
-                    var fileName = GetFileName(uri);
+                    var path = CopyUriToCache(uri);
 
-                    if (fileName != null)
-                    {
-                        photos.Add(fileName);
-                    }
+                    if (path != null)
+                        photos.Add(path);
                 }
             }
-
-
             else if (intent.Action == Intent.ActionSendMultiple)
             {
                 var uris = intent.GetParcelableArrayListExtra(Intent.ExtraStream);
@@ -100,17 +126,14 @@ namespace PhotoDateFixer
                     {
                         if (item is Android.Net.Uri uri)
                         {
-                            var fileName = GetFileName(uri);
+                            var path = CopyUriToCache(uri);
 
-                            if (fileName != null)
-                            {
-                                photos.Add(fileName);
-                            }
+                            if (path != null)
+                                photos.Add(path);
                         }
                     }
                 }
             }
-
 
             if (photos.Count > 0)
             {

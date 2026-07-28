@@ -10,18 +10,36 @@ public class ExifDateDetectionService
     {
         try
         {
+            System.Diagnostics.Debug.WriteLine(
+                $"Reading EXIF: {filePath}"
+            );
+
             var directories = ImageMetadataReader.ReadMetadata(filePath);
+
+            System.Diagnostics.Debug.WriteLine(
+                $"Directories found: {directories.Count()}"
+            );
 
             var exifDirectory = directories
                 .OfType<ExifSubIfdDirectory>()
                 .FirstOrDefault();
 
-            if (exifDirectory != null)
+            if (exifDirectory == null)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    "No ExifSubIfdDirectory"
+                );
+            }
+            else
             {
                 if (exifDirectory.TryGetDateTime(
-    ExifDirectoryBase.TagDateTimeOriginal,
-    out DateTime result))
+                    ExifDirectoryBase.TagDateTimeOriginal,
+                    out DateTime result))
                 {
+                    System.Diagnostics.Debug.WriteLine(
+                        $"EXIF DateTimeOriginal: {result}"
+                    );
+
                     return new DateDetectionResult
                     {
                         Date = result,
@@ -29,18 +47,17 @@ public class ExifDateDetectionService
                         Source = "EXIF DateTimeOriginal"
                     };
                 }
-                {
-                    return new DateDetectionResult
-                    {
-                        Date = result,
-                        Confidence = 100,
-                        Source = "EXIF DateTimeOriginal"
-                    };
-                }
+
+                System.Diagnostics.Debug.WriteLine(
+                    "DateTimeOriginal tag not found"
+                );
             }
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine(
+                $"EXIF ERROR: {ex}"
+            );
         }
 
         return new DateDetectionResult
