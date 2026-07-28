@@ -6,6 +6,26 @@ namespace PhotoDateFixer.Services;
 
 public class ExifDateDetectionService
 {
+    private bool IsValidDate(DateTime date)
+    {
+        int currentYear = DateTime.Now.Year;
+
+        // Reject impossible years
+        if (date.Year < 1990)
+            return false;
+
+        if (date.Year > currentYear)
+            return false;
+
+        // Reject invalid month/day
+        if (date.Month < 1 || date.Month > 12)
+            return false;
+
+        if (date.Day < 1 || date.Day > DateTime.DaysInMonth(date.Year, date.Month))
+            return false;
+
+        return true;
+    }
     public DateDetectionResult DetectDate(string filePath)
     {
         try
@@ -33,19 +53,22 @@ public class ExifDateDetectionService
             else
             {
                 if (exifDirectory.TryGetDateTime(
-                    ExifDirectoryBase.TagDateTimeOriginal,
-                    out DateTime result))
+     ExifDirectoryBase.TagDateTimeOriginal,
+     out DateTime result))
                 {
-                    System.Diagnostics.Debug.WriteLine(
-                        $"EXIF DateTimeOriginal: {result}"
-                    );
-
-                    return new DateDetectionResult
+                    if (IsValidDate(result))
                     {
-                        Date = result,
-                        Confidence = 100,
-                        Source = "EXIF DateTimeOriginal"
-                    };
+                        return new DateDetectionResult
+                        {
+                            Date = result,
+                            Confidence = 100,
+                            Source = "EXIF DateTimeOriginal"
+                        };
+                    }
+
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Invalid EXIF date ignored: {result}"
+                    );
                 }
 
                 System.Diagnostics.Debug.WriteLine(

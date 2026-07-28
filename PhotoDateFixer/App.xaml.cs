@@ -1,12 +1,15 @@
-﻿namespace PhotoDateFixer
-{
-    public partial class App : Application
-    {
-        public App()
-        {
-            InitializeComponent();
+﻿using PhotoDateFixer.Services;
 
-            MainPage = new AppShell();
-        }
+namespace PhotoDateFixer;
+
+public partial class App : Application
+{
+    public App(IDateFixService dateFixService)
+    {
+        InitializeComponent();
+
+        MainPage = new AppShell(
+            new MainPage(dateFixService)
+        );
     }
 }

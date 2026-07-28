@@ -2,9 +2,9 @@
 
 public class DateDetectionResult
 {
-    public DateTime? Date { get; init; }
+    public DateTime? Date { get; set; }
 
-    public int Confidence { get; init; }
+    public int Confidence { get; set; }
 
-    public string Source { get; init; } = "";
+    public string Source { get; set; } = string.Empty;
 }

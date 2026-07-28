@@ -8,11 +8,13 @@ public partial class MainPage : ContentPage
 {
     private readonly PhotoPickerService photoPickerService;
     private readonly DateDetectionService parser = new();
+    private readonly IDateFixService dateFixService;
     private readonly ObservableCollection<PhotoInfo> photoInfos = new();
 
-    public MainPage()
+    public MainPage(IDateFixService dateFixService)
     {
         InitializeComponent();
+        this.dateFixService = dateFixService;
 
         photoPickerService = new PhotoPickerService();
 
@@ -25,26 +27,28 @@ public partial class MainPage : ContentPage
 
     private void LoadSharedPhotos()
     {
-        if (SharedPhotoService.SharedFileNames.Count == 0)
+        if (SharedPhotoService.SharedPhotos.Count == 0)
             return;
 
         photoInfos.Clear();
 
-        foreach (var filePath in SharedPhotoService.SharedFileNames)
+        foreach (var sharedPhoto in SharedPhotoService.SharedPhotos)
         {
-            var fileName = Path.GetFileName(filePath);
+            System.Diagnostics.Debug.WriteLine($"PATH: {sharedPhoto.FullPath}");
 
-            System.Diagnostics.Debug.WriteLine($"PATH: {filePath}");
-
-            var result = parser.DetectDate(filePath, fileName);
+            var result = parser.DetectDate(
+                sharedPhoto.FullPath,
+                sharedPhoto.FileName);
 
             System.Diagnostics.Debug.WriteLine(
-                $"FILE: {fileName} | DATE: {result.Date} | CONFIDENCE: {result.Confidence} | SOURCE: {result.Source}"
+                $"FILE: {sharedPhoto.FileName} | DATE: {result.Date} | CONFIDENCE: {result.Confidence} | SOURCE: {result.Source}"
             );
 
             photoInfos.Add(new PhotoInfo
             {
-                FileName = fileName,
+                FileName = sharedPhoto.FileName,
+                FullPath = sharedPhoto.FullPath,
+                ContentUri = sharedPhoto.ContentUri,
                 DetectedDate = result.Date,
                 Confidence = result.Confidence,
                 Source = result.Source
@@ -53,7 +57,7 @@ public partial class MainPage : ContentPage
 
         StatusLabel.Text = $"{photoInfos.Count} photos processed";
 
-        SharedPhotoService.SharedFileNames.Clear();
+        SharedPhotoService.SharedPhotos.Clear();
     }
 
     private async void OnSelectPhotosClicked(object sender, EventArgs e)
@@ -78,6 +82,7 @@ public partial class MainPage : ContentPage
             photoInfos.Add(new PhotoInfo
             {
                 FileName = photo.FileName,
+                FullPath = photo.FullPath,
                 DetectedDate = result.Date,
                 Confidence = result.Confidence,
                 Source = result.Source
@@ -87,8 +92,48 @@ public partial class MainPage : ContentPage
         StatusLabel.Text = $"{photoInfos.Count} photos processed";
     }
 
-    private void OnFixDatesClicked(object sender, EventArgs e)
+    private async void OnFixDatesClicked(object sender, EventArgs e)
     {
-        StatusLabel.Text = "Fix dates clicked";
+        try
+        {
+            StatusLabel.Text = "Fixing dates...";
+
+            if (dateFixService == null)
+            {
+                System.Diagnostics.Debug.WriteLine("DATE FIX SERVICE IS NULL");
+                StatusLabel.Text = "Service is null";
+                return;
+            }
+
+            foreach (var photo in photoInfos)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Processing: {photo.FileName}");
+
+                if (photo.DetectedDate == null)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        "No date detected, skipping");
+                    continue;
+                }
+
+                bool success = await dateFixService.FixDate(
+     photo.FullPath,
+     photo.ContentUri,
+     photo.DetectedDate.Value);
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"{photo.FileName} -> {success}");
+            }
+
+            StatusLabel.Text = "Finished";
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"FIX ERROR: {ex}");
+
+            StatusLabel.Text = "Error";
+        }
     }
 }
