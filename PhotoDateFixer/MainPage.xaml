@@ -1,0 +1,35 @@
+﻿<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="PhotoDateFixer.MainPage"
+    Shell.NavBarIsVisible="False">
+
+    <VerticalStackLayout
+        Padding="30"
+        Spacing="20">
+
+        <Label
+            Text="Photo Date Fixer"
+            FontSize="30"
+            HorizontalOptions="Center"/>
+
+        <Label
+            Text="Fix photo dates from filenames"
+            HorizontalOptions="Center"/>
+
+        <Button
+            Text="Select Photos"
+            Clicked="OnSelectPhotosClicked"/>
+
+        <Label
+            x:Name="StatusLabel"
+            Text="No photos selected"
+            HorizontalOptions="Center"/>
+
+        <Button
+            Text="Fix Dates"
+            Clicked="OnFixDatesClicked"/>
+
+    </VerticalStackLayout>
+
+</ContentPage>
