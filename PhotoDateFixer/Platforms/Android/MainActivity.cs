@@ -5,6 +5,7 @@ using Android.OS;
 using PhotoDateFixer.Services;
 using AndroidX.ExifInterface.Media;
 using PhotoDateFixer.Models;
+using PhotoDateFixer.Platforms.Android;
 namespace PhotoDateFixer
 {
     [Activity(
@@ -48,6 +49,17 @@ namespace PhotoDateFixer
             {
                 HandleShareIntent(intent);
             }
+        }
+
+        protected override void OnActivityResult(
+            int requestCode,
+            Result resultCode,
+            Intent? data)
+        {
+            if (AndroidPhotoPicker.HandleActivityResult(requestCode, resultCode, data))
+                return;
+
+            base.OnActivityResult(requestCode, resultCode, data);
         }
 
 

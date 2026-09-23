@@ -1,11 +1,19 @@
-﻿using Microsoft.Maui.Storage;
+using Microsoft.Maui.Storage;
+using PhotoDateFixer.Models;
+
+#if ANDROID
+using PhotoDateFixer.Platforms.Android;
+#endif
 
 namespace PhotoDateFixer.Services;
 
 public class PhotoPickerService
 {
-    public async Task<List<FileResult>> PickPhotos()
+    public async Task<List<SharedPhoto>> PickPhotos()
     {
+#if ANDROID
+        return await AndroidPhotoPicker.PickMultipleAsync();
+#else
         var results = await FilePicker.Default.PickMultipleAsync(
             new PickOptions
             {
@@ -13,6 +21,12 @@ public class PhotoPickerService
                 FileTypes = FilePickerFileType.Images
             });
 
-        return results.ToList();
+        return results.Select(photo => new SharedPhoto
+        {
+            FileName = photo.FileName,
+            FullPath = photo.FullPath,
+            ContentUri = null
+        }).ToList();
+#endif
     }
 }

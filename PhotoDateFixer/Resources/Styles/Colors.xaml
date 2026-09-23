@@ -28,6 +28,23 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
+    <!-- Photo Date Fix visual system: calm ink, blue-violet and mint feedback. -->
+    <Color x:Key="AppBackgroundLight">#F6F7FB</Color>
+    <Color x:Key="AppBackgroundDark">#10131C</Color>
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="SurfaceDark">#1B2130</Color>
+    <Color x:Key="InkLight">#182033</Color>
+    <Color x:Key="InkDark">#F4F7FF</Color>
+    <Color x:Key="MutedLight">#667085</Color>
+    <Color x:Key="MutedDark">#AAB4C8</Color>
+    <Color x:Key="Accent">#5965D8</Color>
+    <Color x:Key="AccentPressed">#4652BF</Color>
+    <Color x:Key="AccentSoft">#E9EBFF</Color>
+    <Color x:Key="Mint">#147A68</Color>
+    <Color x:Key="MintSoft">#E4F5F0</Color>
+    <Color x:Key="StrokeLight">#E3E7EF</Color>
+    <Color x:Key="StrokeDark">#30394B</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>

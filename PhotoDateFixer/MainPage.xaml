@@ -1,196 +1,94 @@
-﻿<ContentPage
+<ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="PhotoDateFixer.MainPage"
     Shell.NavBarIsVisible="False">
 
     <Grid
-        Padding="12"
-        RowDefinitions="Auto,Auto,Auto,*,Auto">
+        x:Name="PageContent"
+        Padding="16,12,16,12"
+        Opacity="0"
+        BackgroundColor="{AppThemeBinding Light={StaticResource AppBackgroundLight}, Dark={StaticResource AppBackgroundDark}}"
+        RowDefinitions="Auto,Auto,*,Auto"
+        RowSpacing="8">
 
-        <!-- Header -->
-        <Label
-            Grid.Row="0"
-            Text="Photo Date Fixer"
-            FontSize="26"
-            FontAttributes="Bold"
-            HorizontalOptions="Center"
-            Margin="0,4,0,12"/>
-
-        <!-- Select -->
-        <Button
-            Grid.Row="1"
-            HeightRequest="44"
-            CornerRadius="10"
-            Text="Select Photos"
-            Clicked="OnSelectPhotosClicked"/>
-
-        <!-- Status -->
-        <Label
-            Grid.Row="2"
-            x:Name="StatusLabel"
-            FontSize="13"
-            HorizontalOptions="Center"
-            Margin="0,8"/>
-
-        <!-- Photos -->
-        <CollectionView
-            Grid.Row="3"
-            x:Name="PhotoList"
-            SelectionMode="None">
-
-            <CollectionView.ItemTemplate>
-
-                <DataTemplate>
-
-                    <Frame
-                        Margin="0,4"
-                        Padding="8"
-                        CornerRadius="12"
-                        BorderColor="#DDDDDD"
-                        HasShadow="False">
-
-                        <Grid
-                            ColumnDefinitions="60,*"
-                            ColumnSpacing="10">
-
-                            <Grid.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Tapped="OnPhotoTapped"/>
-                            </Grid.GestureRecognizers>
-
-                            <!-- Thumbnail -->
-
-                            <!-- Thumbnail -->
-                            <Grid
-    Grid.Column="0"
-    WidthRequest="64"
-    HeightRequest="64">
-
-                                <Image
-        Source="{Binding Thumbnail}"
-        Aspect="AspectFill"
-        WidthRequest="64"
-        HeightRequest="64"
-        HorizontalOptions="Fill"
-        VerticalOptions="Fill"/>
-
-                            </Grid>
-
-                            <!-- Info -->
-
-                            <VerticalStackLayout
-                                Grid.Column="1"
-                                Spacing="3">
-
-                                <!-- First Row -->
-
-                                <Grid
-                                    ColumnDefinitions="Auto,*">
-
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        IsChecked="{Binding IsSelected}"
-                                        InputTransparent="True"/>
-
-                                    <Label
-                                        Grid.Column="1"
-                                        Text="{Binding FileName}"
-                                        FontSize="13"
-                                        FontAttributes="Bold"
-                                        LineBreakMode="TailTruncation"
-                                        MaxLines="1"
-                                        VerticalTextAlignment="Center"/>
-
-                                </Grid>
-
-                                <!-- Date -->
-
-                                <Label
-                                    Text="{Binding DetectedDate,StringFormat='{0:dd MMM yyyy HH:mm}'}"
-                                    FontSize="11"
-                                    TextColor="#555555"/>
-
-                                <!-- Source + Confidence -->
-
-                                <HorizontalStackLayout
-                                    Spacing="10">
-
-                                    <Frame
-                                        Padding="6,2"
-                                        CornerRadius="6"
-                                        BackgroundColor="#E8F5E9"
-                                        HasShadow="False">
-
-                                        <Label
-                                            Text="{Binding Source}"
-                                            FontSize="10"
-                                            FontAttributes="Bold"
-                                            TextColor="#2E7D32"/>
-
-                                    </Frame>
-
-                                    <Label
-                                        Text="{Binding Confidence,StringFormat='Confidence {0}%'}"
-                                        FontSize="10"
-                                        VerticalOptions="Center"
-                                        TextColor="Gray"/>
-
-                                </HorizontalStackLayout>
-
-                            </VerticalStackLayout>
-
-                        </Grid>
-
-                    </Frame>
-
-                </DataTemplate>
-
-            </CollectionView.ItemTemplate>
-
-        </CollectionView>
-
-        <!-- Bottom Controls -->
-
-        <Frame
-            Grid.Row="4"
-            Margin="0,10,0,0"
-            Padding="10"
-            CornerRadius="12"
-            BorderColor="#DDDDDD"
-            HasShadow="False">
-
-            <VerticalStackLayout
-                Spacing="8">
-
-                <Label
-                    Text="Manual Date &amp; Time"
-                    FontSize="15"
-                    FontAttributes="Bold"/>
-
-                <DatePicker
-                    x:Name="ManualDatePicker"/>
-
-                <TimePicker
-                    x:Name="ManualTimePicker"
-                    Format="HH:mm"/>
-
-                <Button
-                    HeightRequest="44"
-                    CornerRadius="10"
-                    Text="Apply To Selected"
-                    Clicked="OnSetDateClicked"/>
-
-                <Button
-                    HeightRequest="44"
-                    CornerRadius="10"
-                    Text="Fix Dates"
-                    Clicked="OnFixDatesClicked"/>
-
-            </VerticalStackLayout>
-
+        <Frame Grid.Row="0" Padding="14,10" CornerRadius="16" BackgroundColor="{StaticResource Accent}" BorderColor="{StaticResource Accent}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="1" VerticalOptions="Center">
+                    <Label Text="PHOTO DATE FIX" TextColor="White" FontSize="18" FontFamily="OpenSansSemibold" />
+                    <Label Text="Review and update your photo dates" TextColor="#E8EAFF" FontSize="11" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Style="{StaticResource SecondaryActionButton}" HeightRequest="40" MinimumHeightRequest="40" Padding="12,6" Text="Add photos" Clicked="OnSelectPhotosClicked" SemanticProperties.Hint="Opens the photo picker to choose one or more photos" />
+            </Grid>
         </Frame>
 
-    </Grid>
+        <Frame Grid.Row="1" Padding="10,6" CornerRadius="10" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" BorderColor="{AppThemeBinding Light={StaticResource StrokeLight}, Dark={StaticResource StrokeDark}}">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <ActivityIndicator x:Name="LoadingIndicator" IsVisible="False" IsRunning="False" Color="{StaticResource Accent}" HeightRequest="20" WidthRequest="20" />
+                <Label Grid.Column="1" x:Name="StatusLabel" Text="Choose photos to get started" TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" FontSize="13" VerticalTextAlignment="Center" />
+            </Grid>
+        </Frame>
 
+        <CollectionView Grid.Row="2" x:Name="PhotoList" SelectionMode="None" Margin="0,0,0,2">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Padding="24,28" Spacing="7" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Your selected photos will appear here" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontFamily="OpenSansSemibold" FontSize="15" HorizontalTextAlignment="Center" />
+                    <Label Text="We’ll detect the date automatically from the image or its filename." TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" FontSize="13" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="0,4" Padding="10" CornerRadius="16" BorderColor="{AppThemeBinding Light={StaticResource StrokeLight}, Dark={StaticResource StrokeDark}}" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+                        <Frame.Triggers>
+                            <DataTrigger TargetType="Frame" Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="BorderColor" Value="{StaticResource Accent}" />
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource AccentSoft}, Dark={StaticResource SurfaceDark}}" />
+                            </DataTrigger>
+                        </Frame.Triggers>
+                        <Grid ColumnDefinitions="64,*" ColumnSpacing="10">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnPhotoTapped" />
+                            </Grid.GestureRecognizers>
+                            <Grid Grid.Column="0" WidthRequest="64" HeightRequest="64">
+                                <Image Source="{Binding Thumbnail}" Aspect="AspectFill" WidthRequest="64" HeightRequest="64" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                            </Grid>
+                            <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" InputTransparent="True" />
+                                    <Label Grid.Column="1" Text="{Binding FileName}" FontSize="13" FontFamily="OpenSansSemibold" LineBreakMode="TailTruncation" MaxLines="1" VerticalTextAlignment="Center" />
+                                </Grid>
+                                <Label Text="{Binding DetectedDate,StringFormat='{0:dd MMM yyyy  •  HH:mm}'}" FontSize="11" TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" />
+                                <HorizontalStackLayout Spacing="10">
+                                    <Frame Padding="5,2" CornerRadius="6" BackgroundColor="{StaticResource MintSoft}" BorderColor="{StaticResource MintSoft}">
+                                        <Label Text="{Binding Source}" FontSize="10" FontFamily="OpenSansSemibold" TextColor="{StaticResource Mint}" />
+                                    </Frame>
+                                    <Label Text="{Binding Confidence,StringFormat='Confidence {0}%'}" FontSize="10" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Frame Grid.Row="3" Padding="12,8" CornerRadius="16" BorderColor="{AppThemeBinding Light={StaticResource StrokeLight}, Dark={StaticResource StrokeDark}}" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+            <VerticalStackLayout Spacing="6">
+                <Button x:Name="ManualDateToggleButton" BackgroundColor="Transparent" TextColor="{StaticResource Accent}" BorderWidth="0" HeightRequest="34" MinimumHeightRequest="34" Padding="4,2" HorizontalOptions="Start" FontSize="13" FontFamily="OpenSansSemibold" Text="Set a custom date for selected photos  ▾" Clicked="OnToggleManualDateEditor" />
+                <VerticalStackLayout x:Name="ManualDateEditor" IsVisible="False" Padding="4,2,4,2" Spacing="8">
+                    <Label Text="Choose a date and time, then apply it to the photos you checked above." TextColor="{AppThemeBinding Light={StaticResource MutedLight}, Dark={StaticResource MutedDark}}" FontSize="12" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Frame Padding="10,3" CornerRadius="12" BorderColor="{AppThemeBinding Light={StaticResource StrokeLight}, Dark={StaticResource StrokeDark}}">
+                            <DatePicker x:Name="ManualDatePicker" />
+                        </Frame>
+                        <Frame Grid.Column="1" Padding="10,3" CornerRadius="12" BorderColor="{AppThemeBinding Light={StaticResource StrokeLight}, Dark={StaticResource StrokeDark}}">
+                            <TimePicker x:Name="ManualTimePicker" Format="HH:mm" />
+                        </Frame>
+                    </Grid>
+                    <Button Style="{StaticResource SecondaryActionButton}" HeightRequest="46" MinimumHeightRequest="46" Text="Apply date to selected" Clicked="OnSetDateClicked" SemanticProperties.Hint="Sets the chosen date and time on checked photos" />
+                </VerticalStackLayout>
+                <Button x:Name="FixDatesButton" Style="{StaticResource PrimaryActionButton}" HeightRequest="48" MinimumHeightRequest="48" Text="Update dates for all photos" Clicked="OnFixDatesClicked" SemanticProperties.Hint="Writes the detected or chosen dates into all loaded photo metadata" />
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 </ContentPage>
